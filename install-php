@@ -11,6 +11,9 @@ NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) \
   libjpeg-turbo-dev \
   libpng-dev \
   libmcrypt-dev \
+  libmemcached-dev \
+  zlib-dev \
+  cyrus-sasl-dev \
 \
 && apk add --no-cache \
   curl \
@@ -19,11 +22,15 @@ NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) \
   libpng \
   libjpeg-turbo \
   libmcrypt \
+  libmemcached-libs \
+  zlib \
 \
 && pecl install imagick \
 && pecl install redis \
-&& docker-php-ext-enable redis imagick \
+&& pecl install memcached \
+&& docker-php-ext-enable redis imagick memcached \
 \
+&& docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
 && docker-php-ext-install -j${NPROC} \
   pdo \
   pdo_mysql \
@@ -34,8 +41,6 @@ NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) \
   xml \
   zip \
   soap \
-\
-&& docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
-&& docker-php-ext-install -j${NPROC} \
   gd \
+\
 && apk del -f .build-deps
