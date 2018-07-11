@@ -17,5 +17,8 @@ RUN apk add --no-cache --update tzdata && \
     cp -v /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
     echo "${TIMEZONE}" > /etc/timezone
 
-RUN addgroup -g 1000 xooxx && adduser -D -u 1000 -G xooxx xooxx
+RUN addgroup -g 1000 xooxx \
+ && adduser -D -u 1000 -G xooxx xooxx \
+ && addgroup xooxx www-data
+
 WORKDIR /code
