@@ -1,0 +1,6 @@
+#!/bin/sh
+set -e
+export -p > /project_env. && chmod +x /project_env.sh
+
+[ ! -z "$CRON_STRINGS" ] && echo -e "$CRON_STRINGS\n" > /var/spool/cron/crontabs/CRON_STRINGS
+crond -s /var/spool/cron/crontabs -b -L /var/log/cron/cron.log "$@" && tail -f /var/log/cron/cron.log
