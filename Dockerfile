@@ -1,59 +1,48 @@
 FROM php:7-fpm-alpine
 LABEL maintainer="Filipe <www@filipeandre.com>"
 ARG TIMEZONE=Europe/Lisbon
+ENV PATH="/xooxx/.composer/vendor/bin:${PATH}"
+ADD install-php /usr/sbin/install-php
+ADD cron-scheduler /usr/sbin/cron-scheduler
+
 
 RUN apk update && \
  apk upgrade && \
- apk add --no-cache bash git openssh-client dcron ca-certificates
-
-# Install PHP extensions
-ADD install-php /usr/sbin/install-php
-RUN /usr/sbin/install-php
-ENV PATH="/xooxx/.composer/vendor/bin:${PATH}"
-
-#Npm
-ENV NODE_VERSION 8.11.3
-ENV YARN_VERSION 1.6.0
-ADD install-npm /usr/sbin/install-npm
-RUN /usr/sbin/install-npm
-
-# Goofys
-RUN apk add --no-cache --virtual=build-dependencies musl-dev go \
-    && GOPATH=/tmp/go \
-    && export GOPATH=$GOPATH \
-    && go get github.com/kahing/goofys \
-    && go install github.com/kahing/goofys \
-    && cp $GOPATH/bin/goofys /usr/local/bin \
-    \
-    && apk add --no-cache fuse syslog-ng \
-    \
-    && echo '@version: 3.7' > /etc/syslog-ng/syslog-ng.conf \
-    && echo 'source goofys {internal();network(transport("udp"));unix-dgram("/dev/log");};' >> /etc/syslog-ng/syslog-ng.conf \
-    && echo 'destination goofys {file("/var/log/goofys");};' >> /etc/syslog-ng/syslog-ng.conf \
-    && echo 'log {source(goofys);destination(goofys);};' >> /etc/syslog-ng/syslog-ng.conf \
-    \
-    && apk del build-dependencies \
-    && rm -rf "/tmp/"*
-
-# Cron
-RUN mkdir -p /var/log/cron \
-&& mkdir -m 0644 -p /var/spool/cron/crontabs \
-&& touch /var/log/cron/cron.log \
-&& mkdir -m 0644 -p /etc/cron.d
-ADD cron-scheduler /usr/sbin/cron-scheduler
-
-# Update CA
-RUN mkdir -p /etc/ssl/certs && update-ca-certificates
-
-# Set Timezone
-RUN apk add --no-cache --update tzdata && \
-    cp -v /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
-    echo "${TIMEZONE}" > /etc/timezone
-
-# User and group
-RUN addgroup -g 1000 xooxx \
- && adduser -D -u 1000 -G xooxx xooxx \
- && addgroup xooxx www-data
+ apk add --no-cache bash git openssh-client dcron ca-certificates fuse syslog-ng tzdata && \
+#Install nodejs
+ apk add --no-cache --update --repository http://nl.alpinelinux.org/alpine/v3.8/main libuv=1.20.2-r0 npm=8.11.3-r1 nodejs=8.11.3-r1 && \
+#Setup user
+ addgroup -g 1000 xooxx && \
+ adduser -D -s /bin/bash -u 1000 -G xooxx xooxx && \
+ addgroup xooxx www-data && \
+#Install php extensions
+ /usr/sbin/install-php && \
+#Install goofys
+ apk add --no-cache --virtual=.build-deps musl-dev go && \
+ GOPATH=/tmp/go && \
+ export GOPATH=$GOPATH && \
+ go get github.com/kahing/goofys && \
+ go install github.com/kahing/goofys && \
+ cp $GOPATH/bin/goofys /usr/local/bin && \
+ echo '@version: 3.9' > /etc/syslog-ng/syslog-ng.conf && \
+ echo 'source goofys {internal();network(transport("udp"));unix-dgram("/dev/log");};' >> /etc/syslog-ng/syslog-ng.conf && \
+ echo 'destination goofys {file("/var/log/goofys");};' >> /etc/syslog-ng/syslog-ng.conf && \
+ echo 'log {source(goofys);destination(goofys);};' >> /etc/syslog-ng/syslog-ng.conf && \
+ chown xooxx:xooxx /etc/syslog-ng/syslog-ng.conf && \
+ echo "user_allow_other" >> /etc/fuse.conf && \
+#Install cron
+ mkdir -p /var/log/cron && \
+ mkdir -m 0644 -p /var/spool/cron/crontabs && \
+ touch /var/log/cron/cron.log && \
+ mkdir -m 0644 -p /etc/cron.d && \
+#Update ca certificates
+ mkdir -p /etc/ssl/certs && update-ca-certificates && \
+#Set timezone
+ cp -v /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
+ echo "${TIMEZONE}" > /etc/timezone && \
+#Cleanup
+ apk del -f .build-deps && \
+ rm -rf "/tmp/"*
 
 WORKDIR /code
 ENTRYPOINT ["docker-php-entrypoint"]

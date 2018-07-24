@@ -1,6 +1,6 @@
 #!/bin/bash
 NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) \
-&& apk add  --no-cache --virtual .build-deps \
+&& apk add  --no-cache --virtual .php-build-deps \
   $PHPIZE_DEPS \
   curl-dev \
   imagemagick-dev \
@@ -49,4 +49,4 @@ NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) \
 && echo 'export PATH=/xooxx/.composer/vendor/bin:$PATH' >>/etc/profile \
 && echo "memory_limit = 2G;" > /usr/local/etc/php/php.ini \
 \
-&& apk del -f .build-deps
+&& apk del -f .php-build-deps
