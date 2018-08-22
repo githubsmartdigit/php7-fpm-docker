@@ -16,6 +16,8 @@ NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) \
   libmcrypt-dev \
 \
 && apk add --no-cache \
+  libmcrypt \
+  libltdl \
   curl \
   imagemagick \
   freetype \
@@ -30,6 +32,7 @@ NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) \
 && docker-php-ext-enable redis imagick memcached \
 \
 && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+&& docker-php-ext-configure mcrypt \
 && docker-php-ext-install -j${NPROC} \
   mcrypt \
   iconv \
