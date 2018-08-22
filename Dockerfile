@@ -1,4 +1,4 @@
-FROM php:7-fpm-alpine
+FROM php:7.0-fpm-alpine
 LABEL maintainer="Filipe <www@filipeandre.com>"
 ARG TIMEZONE=Europe/Lisbon
 ENV PATH="/xooxx/.composer/vendor/bin:${PATH}"
@@ -10,7 +10,7 @@ RUN apk update && \
  apk upgrade && \
  apk add --no-cache bash git openssh-client dcron ca-certificates fuse syslog-ng tzdata && \
 #Install nodejs
- apk add --no-cache --update --repository http://nl.alpinelinux.org/alpine/v3.8/main libuv=1.20.2-r0 npm=8.11.3-r1 nodejs=8.11.3-r1 && \
+ apk add --no-cache --update --repository http://nl.alpinelinux.org/alpine/v3.8/main libuv=1.20.2-r0 npm=8.11.4-r0 nodejs=8.11.4-r0 && \
 #Setup user
  addgroup -g 1000 xooxx && \
  adduser -D -s /bin/bash -u 1000 -G xooxx xooxx && \
