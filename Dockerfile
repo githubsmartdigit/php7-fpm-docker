@@ -1,4 +1,4 @@
-FROM php:7.0-fpm-alpine
+FROM php:7.1-fpm-alpine
 LABEL maintainer="Filipe <www@filipeandre.com>"
 ARG TIMEZONE=Europe/Lisbon
 ENV PATH="/xooxx/.composer/vendor/bin:${PATH}"

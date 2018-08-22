@@ -1,1 +1,1 @@
-docker build -t xooxx/php7.0-fpm:latest .
+docker build -t xooxx/php7.1-fpm:latest .
