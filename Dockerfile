@@ -10,7 +10,7 @@ RUN apk update && \
  apk upgrade && \
  apk add --no-cache bash git openssh-client dcron ca-certificates fuse syslog-ng tzdata && \
 #Install nodejs
- apk add --no-cache --update --repository http://nl.alpinelinux.org/alpine/v3.8/main libuv=1.20.2-r0 npm=8.11.4-r0 nodejs=8.11.4-r0 && \
+ apk add --no-cache --update --repository http://nl.alpinelinux.org/alpine/v3.8/main libuv=1.20.2-r0 npm nodejs && \
 #Setup user
  addgroup -g 1000 xooxx && \
  adduser -D -s /bin/bash -u 1000 -G xooxx xooxx && \
