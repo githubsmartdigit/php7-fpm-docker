@@ -1,7 +1,7 @@
 FROM php:7.0-fpm-alpine
 LABEL maintainer="Filipe <www@filipeandre.com>"
 ARG TIMEZONE=Europe/Lisbon
-ENV PATH="/xooxx/.composer/vendor/bin:${PATH}"
+ENV PATH="/home/xooxx/.composer/vendor/bin:${PATH}"
 ADD install-php /usr/sbin/install-php
 ADD cron-scheduler /usr/sbin/cron-scheduler
 
