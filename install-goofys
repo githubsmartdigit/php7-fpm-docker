@@ -1,0 +1,14 @@
+#!/bin/bash
+ apk add --no-cache --virtual .go-build-deps musl-dev go && \
+ GOPATH=/tmp/go && \
+ export GOPATH=$GOPATH && \
+ go get github.com/kahing/goofys && \
+ go install github.com/kahing/goofys && \
+ cp $GOPATH/bin/goofys /usr/local/bin && \
+ echo '@version: 3.9' > /etc/syslog-ng/syslog-ng.conf && \
+ echo 'source goofys {internal();network(transport("udp"));unix-dgram("/dev/log");};' >> /etc/syslog-ng/syslog-ng.conf && \
+ echo 'destination goofys {file("/var/log/goofys");};' >> /etc/syslog-ng/syslog-ng.conf && \
+ echo 'log {source(goofys);destination(goofys);};' >> /etc/syslog-ng/syslog-ng.conf && \
+ chown xooxx:xooxx /etc/syslog-ng/syslog-ng.conf && \
+ echo "user_allow_other" >> /etc/fuse.conf && \
+ apk del -f .go-build-deps

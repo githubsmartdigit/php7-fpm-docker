@@ -50,7 +50,6 @@ NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) \
 \
 && curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer \
 && chmod +x /usr/local/bin/composer \
-&& echo 'export PATH=/xooxx/.composer/vendor/bin:$PATH' >>/etc/profile \
 && echo "memory_limit = 2G;" > /usr/local/etc/php/php.ini \
 \
 && apk del -f .php-build-deps

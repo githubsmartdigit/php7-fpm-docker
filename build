@@ -1,1 +1,2 @@
+docker pull php:7-fpm-alpine
 docker build -t xooxx/php7-fpm:latest .
