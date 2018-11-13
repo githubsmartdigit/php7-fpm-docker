@@ -1,2 +1,2 @@
 docker pull php:7-fpm-alpine
-docker build -t xooxx/php7-fpm:latest .
+docker build -t 499945967974.dkr.ecr.eu-west-2.amazonaws.com/app-base:latest .
