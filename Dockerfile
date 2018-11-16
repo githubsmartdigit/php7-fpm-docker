@@ -1,6 +1,12 @@
+FROM microsoft/mssql-tools as mssql
 FROM php:7-fpm-alpine
 LABEL maintainer="Filipe <www@filipeandre.com>"
 ARG TIMEZONE=Europe/Lisbon
+
+# https://github.com/coopTilleuls/php-mssql-alpine/blob/master/7.2/fpm/Dockerfile
+COPY --from=mssql /opt/microsoft/ /opt/microsoft/
+COPY --from=mssql /opt/mssql-tools/ /opt/mssql-tools/
+COPY --from=mssql /usr/lib/libmsodbcsql-13.so /usr/lib/libmsodbcsql-13.so
 
 RUN apk update && apk upgrade --no-cache && \
 	apk add --no-cache bash git openssh-client ca-certificates fuse syslog-ng tzdata sudo && \

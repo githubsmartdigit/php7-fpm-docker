@@ -14,6 +14,8 @@ NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) \
   zlib-dev \
   cyrus-sasl-dev \
   gmp-dev \
+  unixodbc-dev \
+  freetds-dev \
 \
 && apk add --no-cache \
   curl \
@@ -23,6 +25,8 @@ NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) \
   libjpeg-turbo \
   libmemcached-libs \
   zlib \
+  freetds \
+  unixodbc \
 \
 && pecl install imagick \
 && pecl install redis \
@@ -48,8 +52,17 @@ NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) \
   gmp \
   bcmath \
 \
+&& docker-php-source extract \
+&& docker-php-ext-install pdo_dblib \
+&& pecl install \
+    sqlsrv \
+    pdo_sqlsrv \
+&& docker-php-ext-enable --ini-name 30-sqlsrv.ini sqlsrv \
+&& docker-php-ext-enable --ini-name 35-pdo_sqlsrv.ini pdo_sqlsrv \
+&& docker-php-source delete \
 && curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer \
 && chmod +x /usr/local/bin/composer \
 && echo "memory_limit = 2G;" > /usr/local/etc/php/php.ini \
 \
+&& docker-php-source delete \
 && apk del -f .php-build-deps
